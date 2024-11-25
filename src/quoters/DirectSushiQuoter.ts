@@ -20,7 +20,8 @@ export class DirectSushiQuoter implements IQuoterService {
     chainId: number,
     request: ExactOutputRequest,
   ): Promise<ExactOutputResponse | null> {
-    throw new Error('Method not implemented.')
+    const quotes = await this.quoteExactOutputSingleBatch(chainId, [request])
+    return quotes[0] || null
   }
 
   // There is no need for this function, as it's the same steps taken by `getAmountsIn`
@@ -188,7 +189,7 @@ export class DirectSushiQuoter implements IQuoterService {
     let gasEstimate: BigNumber
 
     // This covers only the two response formats from above (multiCall and batch).
-    // There is no need for this ugliness, of course. And wouldn't be used on prod.
+    // There is no need for this ugliness, of course. And wouldn't be used on a prod.
     if (Array.isArray(result.result[0])) {
       amountInWei = result.result[0]!.at(-2)!
       gasEstimate = result.result[0]!.at(-1)!
